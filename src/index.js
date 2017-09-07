@@ -13,42 +13,44 @@ function Square(props) {
 class Board extends React.Component {
     renderSquare(i) {
         return (
-            <Square
+            <Square key={i}
                 value={this.props.squares[i]}
                 onClick={() => this.props.onClick(i)}
             />
         );
     }
 
-    render() {
+    renderRow(index) {
+        let squares = [];
+        for (let i = 0; i < this.props.boardSize; i++) {
+            squares.push(this.renderSquare((index * this.props.boardSize) + i));
+        }
+
         return (
-            <div>
-                <div className="board-row">
-                    {this.renderSquare(0)}
-                    {this.renderSquare(1)}
-                    {this.renderSquare(2)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(3)}
-                    {this.renderSquare(4)}
-                    {this.renderSquare(5)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(6)}
-                    {this.renderSquare(7)}
-                    {this.renderSquare(8)}
-                </div>
+            <div key={index} className="board-row">
+                {squares}
             </div>
+        );
+    }
+
+    render() {
+        let rows = [];
+        for (let i = 0; i < this.props.boardSize; i++) {
+            rows.push(this.renderRow(i));
+        }
+
+        return (
+            <div>{rows}</div>
         );
     }
 }
 
 class Game extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             history: [{
-                squares: Array(9).fill(null),
+                squares: Array(props.boardSize ** 2).fill(null),
                 moveLocation: null,
             }],
             stepNumber: 0,
@@ -67,8 +69,8 @@ class Game extends React.Component {
 
         squares[i] = this.state.xIsNext ? 'X' : 'O';
 
-        const moveX = (i % 3) + 1;
-        const moveY = Math.floor(i / 3) + 1;
+        const moveX = (i % this.props.boardSize) + 1;
+        const moveY = Math.floor(i / this.props.boardSize) + 1;
 
         this.setState({
             history: history.concat([{
@@ -126,6 +128,7 @@ class Game extends React.Component {
             <div className="game">
                 <div className="game-board">
                     <Board
+                        boardSize={this.props.boardSize}
                         squares={current.squares}
                         onClick={(i) => this.handleClick(i)}
                     />
@@ -164,6 +167,6 @@ function calculateWinner(squares) {
 // ========================================
 
 ReactDOM.render(
-    <Game />,
+    <Game boardSize="3" />,
     document.getElementById('root')
 );
