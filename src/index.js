@@ -142,6 +142,7 @@ class Game extends React.Component {
     }
 }
 
+// TODO: make this work for any sized game board
 function calculateWinner(squares) {
     const lines = [
         [0, 1, 2],
