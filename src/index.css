@@ -48,3 +48,7 @@ ol, ul {
 .game-info {
     margin-left: 20px;
 }
+
+.change-sort {
+    padding-left: 0.5em;
+}
