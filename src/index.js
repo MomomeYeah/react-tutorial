@@ -73,7 +73,9 @@ class Game extends React.Component {
         const current = history[history.length - 1];
         const squares = current.squares.slice();
 
-        if (calculateWinner(squares) || squares[i]) {
+        const boardSize = this.props.boardSize;
+        const toWin = this.props.toWin;
+        if (calculateWinner(squares, boardSize, toWin) || squares[i]) {
             return;
         }
 
@@ -109,7 +111,10 @@ class Game extends React.Component {
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
-        const winner = calculateWinner(current.squares);
+
+        const boardSize = this.props.boardSize;
+        const toWin = this.props.toWin;
+        const winner = calculateWinner(current.squares, boardSize, toWin);
 
         const moves = history.map((step, move) => {
             const moveX = history[move].moveX;
@@ -170,25 +175,69 @@ class Game extends React.Component {
     }
 }
 
-// TODO: make this work for any sized game board
-function calculateWinner(squares) {
-    const lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
+function calculateWinner(squares, size, toWin) {
+    let lines = [];
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            const index = (row * size) + col;
 
+            // horizontal lines
+            if (size - col >= toWin) {
+                let config = [];
+                for (let k = 0; k < toWin; k++) {
+                    config.push(index + k);
+                }
+                lines.push(config);
+            }
+
+            // vertical lines
+            if (size - row >= toWin) {
+                let config = [];
+                for (let k = 0; k < toWin; k++) {
+                    config.push(index + (k*size));
+                }
+                lines.push(config);
+            }
+
+            // diagonals top left to bottom right
+            if (size - row >= toWin && size - col >= toWin) {
+                let config = [];
+                for (let k = 0; k < toWin; k++) {
+                    config.push(index + k + (k*size));
+                }
+                lines.push(config);
+            }
+
+            // diagonals bottom left to top right
+            if (row - toWin + 1 >= 0 && size - col >= toWin) {
+                let config = [];
+                for (let k = 0; k < toWin; k++) {
+                    config.push(index + k - (k*size));
+                }
+                lines.push(config);
+            }
+        }
+    }
+
+    // for each possible winning combination, figure out if the given set of
+    // squares contains that combination owned by a single player
     for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return {
-                player: squares[a],
-                squares: [a, b, c],
+        const line = lines[i];
+        const startIndex = line[0];
+        const player = squares[startIndex];
+        if ( player ) {
+            let found = true;
+            for (let j = 0; j < line.length; j++) {
+                if (player !== squares[line[j]]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                return {
+                    player: player,
+                    squares: line,
+                }
             }
         }
     }
@@ -199,6 +248,6 @@ function calculateWinner(squares) {
 // ========================================
 
 ReactDOM.render(
-    <Game boardSize="3" />,
+    <Game boardSize="4" toWin="3" />,
     document.getElementById('root')
 );
