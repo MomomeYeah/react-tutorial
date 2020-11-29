@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+// function component - simpler way to write components that only contain
+// a `render` method and don't have their own state
 function Square(props) {
     let className = 'square';
     if (props.winner) {
@@ -55,6 +57,9 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+    // store game state in the higher-level component, which should be done
+    // whenever data needs to be collected from multiple children, or when
+    // children need to communicate with each other
     constructor(props) {
         super(props);
         this.state = {
@@ -133,7 +138,7 @@ class Game extends React.Component {
 
             return (
                 <li key={move}>
-                    <a href="#" onClick={() => this.jumpTo(move)} style={style}>{desc}</a>
+                    <button class="link-button" onClick={() => this.jumpTo(move)} style={style}>{desc}</button>
                 </li>
             );
         });
@@ -166,7 +171,7 @@ class Game extends React.Component {
                     <div>{status}</div>
                     <div>
                         <span>Current sort: {sort}</span>
-                        <a href="#" onClick={() => this.changeSortOrder()} className="change-sort">Sort {nextSort}</a>
+                        <button onClick={() => this.changeSortOrder()} className="change-sort link-button">Sort {nextSort}</button>
                     </div>
                     <ol>{moves}</ol>
                 </div>
