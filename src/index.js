@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './index.css';
 
 // function component - simpler way to write components that only contain
@@ -138,7 +138,7 @@ class Game extends React.Component {
 
             return (
                 <li key={move}>
-                    <button class="link-button" onClick={() => this.jumpTo(move)} style={style}>{desc}</button>
+                    <button className="link-button" onClick={() => this.jumpTo(move)} style={style}>{desc}</button>
                 </li>
             );
         });
@@ -251,8 +251,9 @@ function calculateWinner(squares, size, toWin) {
 }
 
 // ========================================
-
-ReactDOM.render(
-    <Game boardSize="4" toWin="3" />,
-    document.getElementById('root')
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <Game boardSize="4" toWin="3" />
+  </React.StrictMode>
 );
